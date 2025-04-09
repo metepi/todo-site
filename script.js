@@ -15,7 +15,7 @@ const templateCode = `<div data-id="%id%" style="border-color: %color%">
   <p>
     %id%. %value%
   </p>
-  <select id="select-%id%">
+  <select>
     <option value="stopped" %stop%>Nincs elkezdve</option>
     <option value="started" %start%>Folyamatban</option>
     <option value="finished" %finish%>Kész</option>
