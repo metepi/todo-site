@@ -1,86 +1,67 @@
+const todoList = document.getElementById("todoList");
 
-const cont = document.getElementById("container")
+let todos = {};
 
-let sorszam = []
+const statuses = {
+  stopped: "red",
+  started: "yellow",
+  finished: "green",
+  delete: "darkred",
+};
 
-let db = 0
+let db = 0;
+
+const templateCode = `<div data-id="%id%" style="border-color: %color%">
+  <p>
+    %id%. %value%
+  </p>
+  <select id="select-%id%">
+    <option value="stopped" %stop%>Nincs elkezdve</option>
+    <option value="started" %start%>Folyamatban</option>
+    <option value="finished" %finish%>Kész</option>
+    <option value="delete" %delete%>Törlés</option>
+  </select>
+  <button style="display: %btn%">Biztos törlöd?</button>
+</div>`;
+
+function makeTodos() {
+  Array.from(todoList.children).forEach((child) => {
+    child.removeEventListener("change", () => {});
+  });
+
+  todoList.innerHTML = "";
+  Object.values(todos).forEach((todo) => {
+    const newTodo = templateCode
+      .replace(/%id%/g, todo.id)
+      .replace(/%value%/g, todo.value)
+      .replace(/%color%/g, statuses[todo.status])
+      .replace(/%stop%/g, todo.status == "stopped" ? "selected" : "")
+      .replace(/%start%/g, todo.status == "started" ? "selected" : "")
+      .replace(/%finish%/g, todo.status == "finished" ? "selected" : "")
+      .replace(/%delete%/g, todo.status == "delete" ? "selected" : "")
+      .replace(/%btn%/g, todo.status == "delete" ? "block" : "none");
+    todoList.innerHTML += newTodo;
+  });
+  Array.from(todoList.children).forEach((child) => {
+    child.children[1].addEventListener("change", (event) => {
+      const selectedValue = event.target.value;
+      todos[child.getAttribute("data-id")].status = selectedValue;
+      makeTodos();
+    });
+    child.children[2].addEventListener("click", (event) => {
+      delete todos[child.getAttribute("data-id")];
+      makeTodos();
+    });
+  });
+}
 
 function display() {
-    db = sorszam.length
-    sorszam.push(db)
-    const inp = document.getElementById("todo")
-    cont.innerHTML += `<div id="todo${db+1}"><p>
-                    ${sorszam[db] + ". " +inp.value}
-                    <select id="select${db+1}" onchange = color() onclick = getid(this.id)>
-                        <option value="stopped">Nincs elkezdve</option>
-                        <option value="started">Folyamatban</option>
-                        <option value="finished">Kész</option>
-                        <option value="delete">Törlés</option>
-                    </select>
-                </p>
-            </div>`
-
-    if(db>9){
-        idszam = select.slice(-2)
-    }
-    else{
-        idszam = select.slice(-1)
-    }    
-    console.log("darab:" + db)
-    console.log("sorszam:" + sorszam)
-    console.log("idszam: " + idszam)
+  db++;
+  const inp = document.getElementById("todo").value;
+  todos[db] = {
+    id: db,
+    value: inp,
+    status: "stopped",
+  };
+  makeTodos();
 }
-
-let select = ""
-let todo = ""
-
-function getid(id){
-    select = id
-    todo = document.getElementById(select).parentElement.parentElement.id
-}
-
-let gomb = ""
-
-function color(){
-    const valaszto = document.getElementById(select)
-    if(valaszto.value == "stopped"){
-        document.getElementById(todo).style.borderColor = "red"
-        
-    }
-    else if(valaszto.value == "started"){
-        document.getElementById(todo).style.borderColor = "yellow"
-    }
-
-    else if(valaszto.value == "finished"){
-        document.getElementById(todo).style.borderColor = "green"
-    }
-    else if(valaszto.value == "delete"){
-        torlogomb()
-        
-    }
-    else{
-        document.getElementById(todo).removeChild(gomb)
-        
-    }
-}
-
-let idszam = "asd"
-
-function torlogomb(){
-    const gomb = document.createElement("button")
-
-    gomb.innerHTML = "Biztos törlöd?"
-    document.getElementById(todo).appendChild(gomb)
-    gomb.onclick = function()    
-    {document.getElementById(todo).remove()
-                
-        for (let i = 0; i < sorszam.length; i++) {
-            if(sorszam[i] > idszam){
-                sorszam[i] = sorszam[i]-1
-                db--
-                console.log("új: " + sorszam[i])
-            }            
-        }
-    }
-}
-
