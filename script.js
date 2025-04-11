@@ -13,7 +13,7 @@ let db = 0;
 
 const templateCode = `<div data-id="%id%" style="border-color: %color%">
   <p>
-    %id%. %value%
+    %id_nev%. %value%
   </p>
   <select>
     <option value="stopped" %stop%>Nincs elkezdve</option>
@@ -30,9 +30,10 @@ function makeTodos() {
   });
 
   todoList.innerHTML = "";
-  Object.values(todos).forEach((todo) => {
+  Object.values(todos).forEach((todo, i) => {
     const newTodo = templateCode
       .replace(/%id%/g, todo.id)
+      .replace(/%id_nev%/g, i + 1)
       .replace(/%value%/g, todo.value)
       .replace(/%color%/g, statuses[todo.status])
       .replace(/%stop%/g, todo.status == "stopped" ? "selected" : "")
